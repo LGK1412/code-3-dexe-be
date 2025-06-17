@@ -1,4 +1,4 @@
-const { required } = require("joi")
+const { required, boolean } = require("joi")
 const { verify } = require("jsonwebtoken")
 
 const mongoose = require('mongoose')
@@ -55,6 +55,14 @@ const userSchema = mongoose.Schema({
     name: {
         type: String,
         required: [true, "Name must be provided!"]
+    },
+    isBan: {
+        type: Boolean
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin', 'author'],
+        default: 'user'
     }
 }, {
     timestamps: true

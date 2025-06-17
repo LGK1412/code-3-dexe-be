@@ -53,7 +53,7 @@ exports.singup = async (email, password) => {
 
     result.password = undefined
 
-    return { success: true }
+    return { success: true, message: 'Đăng ký thành công' }
 }
 
 exports.singin = async (email, password) => {
@@ -81,7 +81,7 @@ exports.singin = async (email, password) => {
         userId: existingUser._id,
         email: existingUser.email,
         verified: existingUser.verified
-    }, process.env.TOKEN_SECRET, { expiresIn: '12w' })
+    }, process.env.TOKEN_SECRET, { expiresIn: '180d' })
 
     existingUser.loginToken = token
     existingUser.save()
@@ -109,10 +109,10 @@ exports.sendVerificationCode = async (email) => {
         return { success: false, message: 'Người dùng không tồn tại!' }
     }
     if (existingUser.verified) {
-        return { success: false, message: 'Người dùng đã được xác minh!' }
+        return { success: false, message: 'Người dùng không được xác minh!' }
     }
 
-    const codeValue = Math.floor(Math.random() * 1000000).toString()
+    const codeValue = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
 
     let info = await transport.sendMail({
         from: process.env.NODE_CODE_SENDING_EMAIL_ADDRESS,
@@ -318,13 +318,13 @@ exports.verifyForgotPasswordCode = async (email, providedCode, newPassword) => {
 
 exports.logInGoogle = async (tokenPayload) => {
     const { name, email, picture: avatar, sub: googleId, email_verified } = tokenPayload
-    
+
     if (!email_verified) {
         return { success: false, message: 'Xác thực email thất bại!' }
     }
 
     let user = await usersModel.findOne({ email }).select("+googleId")
-    
+
     if (user) {
         if (googleId !== user.googleId) {
             return { success: false, message: 'Xác thực email thất bại!' }
@@ -338,7 +338,7 @@ exports.logInGoogle = async (tokenPayload) => {
         userId: user._id,
         email: user.email,
         verified: user.verified
-    }, process.env.TOKEN_SECRET, { expiresIn: '12w' })
+    }, process.env.TOKEN_SECRET, { expiresIn: '180d' })
 
     user.loginToken = token
     await user.save()

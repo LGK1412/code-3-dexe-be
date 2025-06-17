@@ -4,7 +4,7 @@ const usersModel = require('../models/users.model');
 
 exports.identifyInfo = async (req, res, next) => {
     const { email, loginToken } = req.body;
-
+    
     try {
         const { error } = acceptLogoutSchema.validate({ email, loginToken });
         if (error) return res.status(401).json({ success: false, message: error.details[0].message });
@@ -14,8 +14,7 @@ exports.identifyInfo = async (req, res, next) => {
 
         const tokenInfo = jwt.verify(loginToken, process.env.TOKEN_SECRET)
         const tokenInfoInDB = jwt.verify(existingUser.loginToken.toString(), process.env.TOKEN_SECRET)
-        console.log(tokenInfo)
-         console.log(tokenInfoInDB)
+
         const allEmailsMatch =
             email === tokenInfo.email &&
             tokenInfo.email === tokenInfoInDB.email &&
@@ -25,26 +24,7 @@ exports.identifyInfo = async (req, res, next) => {
             tokenInfo.verified &&
             tokenInfoInDB.verified &&
             existingUser.verified;
-
-        // console.log('Email check:', {
-        //     emailFromReq: email,
-        //     emailFromToken: tokenInfo.email,
-        //     emailFromDBToken: tokenInfoInDB.email,
-        //     emailFromDB: existingUser.email,
-        //     allEmailsMatch,
-        // });
-
-        // console.log('Verification check:', {
-        //     verifiedFromToken: tokenInfo.verified,
-        //     verifiedFromDBToken: tokenInfoInDB.verified,
-        //     verifiedFromDB: existingUser.verified,
-        //     allVerified,
-        // });
-
-        // console.log('Final condition:', {
-        //     failCondition: !allEmailsMatch || !allVerified,
-        // });
-
+        
         if (!allEmailsMatch || !allVerified) {
             return res.status(400).json({ success: false, message: 'Identification failed!' });
         }

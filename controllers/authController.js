@@ -3,9 +3,7 @@ const { signupSchema, signinSchema, acceptCodeSchema, acceptLogoutSchema, change
 const usersModel = require("../models/users.model")
 const { doHasing, doHashValidation, hmacProcess } = require("../utils/hasing")
 const transport = require('../middlewares/sendEmail')
-// const { hashSync } = require('bcryptjs')
-// const { exist } = require('joi')
-// const { identifyInfo } = require('../middlewares/identification')
+
 const authService = require("../services/authService")
 
 exports.singup = async (req, res) => {
@@ -28,7 +26,6 @@ exports.singin = async (req, res) => {
     try {
         const result = await authService.singin(email, password)
 
-        console.log(result)
         if (!result.success) {
             res.status(400).json({ success: false, message: result.message })
         }
@@ -58,14 +55,14 @@ exports.logout = async (req, res) => {
 
 exports.sendVerificationCode = async (req, res) => {
     const { email } = req.body
+
     try {
         const result = await authService.sendVerificationCode(email)
         if (!result.success) {
-            res.status(400).json({ success: false, message: result.message })
+            return res.status(400).json({ success: false, message: result.message })
         }
-        res.status(200).json({ success: true, message: 'Code sent successfully!' })
+        res.status(200).json({ success: true, message: 'Gửi mã thành công!' })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ success: false, message: error })
     }
 }
@@ -75,13 +72,13 @@ exports.verifyVerificationCode = async (req, res) => {
 
     try {
 
-        const result = await authService.sendVerificationCode(email, providedCode)
+        const result = await authService.verifyVerificationCode(email, providedCode)
 
         if (!result.success) {
             res.status(400).json({ success: false, message: result.message })
         }
 
-        res.status(200).json({ success: true, message: 'Code sent successfully!' })
+        res.status(200).json({ success: true, message: 'Xác thực thành công!' })
 
     } catch (error) {
         res.status(500).json({ success: false, message: error })
@@ -90,7 +87,7 @@ exports.verifyVerificationCode = async (req, res) => {
 
 exports.sendChangePasswordCode = async (req, res) => {
     const { email, loginToken } = req.body
-
+    
     try {
 
         const result = await authService.sendChangePasswordCode(email)
@@ -163,12 +160,12 @@ exports.logInGoogle = async (req, res) => {
         const tokenPayload = req.tokenPayload
 
         const result = await authService.logInGoogle(tokenPayload)
-        
+
         if (!result.success) {
             res.status(400).json({ success: false, message: result.message })
         }
 
-        res.status(200).json({ success: true, message: result.message, token: result.token})
+        res.status(200).json({ success: true, message: result.message, token: result.token })
     } catch (error) {
         res.status(500).json({ success: false, message: error })
     }

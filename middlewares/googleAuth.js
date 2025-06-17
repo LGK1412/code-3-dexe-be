@@ -8,7 +8,6 @@ exports.verifyGoogleToken = async (req, res, next) => {
     const userInfo = req.body
 
     if (!token) {
-        console.log('No token provided');
         return res.status(401).json({ error: 'No token provided' });
     }
 
