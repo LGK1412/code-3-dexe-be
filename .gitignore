@@ -1,4 +1,4 @@
 .env
-node_modules
-./routers/testRouter.js
-./controllers/testController.js
+node_modules/
+routers/testRouter.js
+controllers/testController.js
