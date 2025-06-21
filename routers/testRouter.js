@@ -1,13 +1,16 @@
-const express = require('express')
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const testController = require('../controllers/testController');
 
-const testController = require('../controllers/testController')
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'avatars/'),
+    filename: (req, file, cb) =>
+        cb(null, Date.now() + path.extname(file.originalname)),
+});
+const upload = multer({ storage });
 
-const router = express.Router()
+router.post('/upload-avatar', upload.single('image'), testController.uploadImage);
 
-router.get('/test', testController.test)
-
-router.get('/setCookieTest', testController.setCookieTest)
-router.get('/checkCokieTest', testController.checkCokieTest)
-
-
-module.exports = router
+module.exports = router;

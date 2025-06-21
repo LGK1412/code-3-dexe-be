@@ -80,12 +80,16 @@ exports.singin = async (email, password) => {
     const token = jwt.sign({
         userId: existingUser._id,
         email: existingUser.email,
-        verified: existingUser.verified
+        verified: existingUser.verified,
+        name: existingUser.name,
+        gender: existingUser.gender,
+        dob: existingUser.dob,
+        avatar: existingUser.avatar,
+        role: existingUser.role,
     }, process.env.TOKEN_SECRET, { expiresIn: '180d' })
 
     existingUser.loginToken = token
-    existingUser.save()
-
+    await existingUser.save()
     return { success: true, token }
 }
 

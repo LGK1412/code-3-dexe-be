@@ -50,7 +50,8 @@ const userSchema = mongoose.Schema({
         select: false
     },
     avatar: {
-        type: String
+        type: String,
+        default: 'avatar.png'
     },
     name: {
         type: String,
@@ -63,6 +64,14 @@ const userSchema = mongoose.Schema({
         type: String,
         enum: ['user', 'admin', 'author'],
         default: 'user'
+    },
+    gender: {
+        type: String,
+        enum: ['Male', 'Female', 'Other', ''],
+        default: ''
+    },
+    dob:{
+        type: String
     }
 }, {
     timestamps: true

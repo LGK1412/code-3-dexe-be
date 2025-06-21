@@ -10,6 +10,8 @@ const GoogleStartegy = require('passport-google-oauth20')
 
 const authRouter = require('./routers/authRouter.js')
 const testRouter = require('./routers/testRouter.js')
+const userRouter = require('./routers/userRouter.js')
+const imageRouter = require('./routers/imageRouter.js')
 
 const app = express()
 
@@ -34,7 +36,12 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 })
 
 app.use('/api/auth', authRouter)
-app.use('/api/example', testRouter)
+app.use('/api/test', testRouter) // cho test ko quan trọng
+
+app.use('/api/image', imageRouter)
+app.use('/avatars', express.static('avatars'));
+
+app.use('/api/user', userRouter)
 
 app.get('/', (req, res) => {
     res.json({ message: "Hello from server" })
