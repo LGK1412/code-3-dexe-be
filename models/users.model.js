@@ -40,11 +40,7 @@ const userSchema = mongoose.Schema({
     loginToken: {
         type: String,
         select: false
-    },
-    provider: {
-        type: String,
-        required: false
-    },
+    },  
     googleId: {
         type: String,
         select: false

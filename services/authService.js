@@ -339,9 +339,14 @@ exports.logInGoogle = async (tokenPayload) => {
     }
 
     const token = jwt.sign({
-        userId: user._id,
-        email: user.email,
-        verified: user.verified
+        userId: existingUser._id,
+        email: existingUser.email,
+        verified: existingUser.verified,
+        name: existingUser.name,
+        gender: existingUser.gender,
+        dob: existingUser.dob,
+        avatar: existingUser.avatar,
+        role: existingUser.role,
     }, process.env.TOKEN_SECRET, { expiresIn: '180d' })
 
     user.loginToken = token
