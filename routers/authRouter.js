@@ -9,6 +9,7 @@ const router = express.Router()
 
 router.post('/signup', authController.singup)
 router.post('/signin', authController.singin)
+router.post('/author-signin', authController.authorSingin)
 router.post('/logout', identifyInfo, authController.logout)
 
 router.patch('/send-verification-code', authController.sendVerificationCode)
@@ -23,5 +24,6 @@ router.post('/send-forgot-password', authController.sendForgotPasswordCode)
 router.post('/verify-forgot-password', authController.verifyForgotPasswordCode)
 
 router.post("/google", verifyGoogleToken, authController.logInGoogle)
+router.post("/author-google", verifyGoogleToken, authController.authorLogInGoogle)
 
 module.exports = router

@@ -3,9 +3,8 @@ const client = new OAuth2Client('682663221551-gja7tocds42r31hdqhu99k97faq1nfu5.a
 
 exports.verifyGoogleToken = async (req, res, next) => {
     const authHeader = req.headers.authorization || '';
-    // console.log('Authorization header:', authHeader);
+
     const token = authHeader.split(' ')[1];
-    const userInfo = req.body
 
     if (!token) {
         return res.status(401).json({ error: 'No token provided' });

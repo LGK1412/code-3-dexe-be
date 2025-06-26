@@ -40,7 +40,7 @@ const userSchema = mongoose.Schema({
     loginToken: {
         type: String,
         select: false
-    },  
+    },
     googleId: {
         type: String,
         select: false
@@ -66,11 +66,15 @@ const userSchema = mongoose.Schema({
         enum: ['Male', 'Female', 'Other', ''],
         default: ''
     },
-    dob:{
+    dob: {
         type: String
+    },
+    authorToken: {
+        type: String,
+        select: false
     }
 }, {
     timestamps: true
 })
 
-module.exports = mongoose.model("Users", userSchema)
+module.exports = mongoose.model("users", userSchema)

@@ -69,7 +69,7 @@ exports.singin = async (email, password) => {
     }
 
     if (existingUser.googleId) {
-        return { success: false, message: 'Vui lòng đăng nhập bằng Goolge Account!' }
+        return { success: false, message: 'Vui lòng đăng nhập bằng Google Account!' }
     }
 
     const result = await doHashValidation(password, existingUser.password)
@@ -339,14 +339,14 @@ exports.logInGoogle = async (tokenPayload) => {
     }
 
     const token = jwt.sign({
-        userId: existingUser._id,
-        email: existingUser.email,
-        verified: existingUser.verified,
-        name: existingUser.name,
-        gender: existingUser.gender,
-        dob: existingUser.dob,
-        avatar: existingUser.avatar,
-        role: existingUser.role,
+        userId: user._id,
+        email: user.email,
+        verified: user.verified,
+        name: user.name,
+        gender: user.gender,
+        dob: user.dob,
+        avatar: user.avatar,
+        role: user.role,
     }, process.env.TOKEN_SECRET, { expiresIn: '180d' })
 
     user.loginToken = token
@@ -355,6 +355,88 @@ exports.logInGoogle = async (tokenPayload) => {
     return {
         success: true,
         message: user ? "Đăng nhập thành công!" : "Đăng ký thành công!",
+        token
+    }
+}
+
+exports.authorSingin = async (email, password) => {
+
+    const { error, value } = signinSchema.validate({ email, password })
+    if (error) {
+        return { success: false, message: error.details[0].message }
+    }
+
+    const existingUser = await usersModel.findOne({ email }).select('+password +googleId')
+    if (!existingUser) {
+        return { success: false, message: 'Người dùng không tồn tại. Vui lòng đăng ký!' }
+    }
+
+    if (existingUser.role !== 'author') {
+        return { success: false, message: 'Vui lòng chuyển thành Tác Giả!' }
+    }
+
+    if (existingUser.googleId) {
+        return { success: false, message: 'Vui lòng đăng nhập bằng Goolge Account!' }
+    }
+
+    const result = await doHashValidation(password, existingUser.password)
+    if (!result) {
+        return { success: false, message: 'Mật khẩu không hợp lệ!' }
+    }
+
+    const token = jwt.sign({
+        userId: existingUser._id,
+        email: existingUser.email,
+        verified: existingUser.verified,
+        name: existingUser.name,
+        gender: existingUser.gender,
+        dob: existingUser.dob,
+        avatar: existingUser.avatar,
+        role: existingUser.role,
+    }, process.env.TOKEN_SECRET, { expiresIn: '1d' })
+
+    existingUser.authorToken = token
+    await existingUser.save()
+    return { success: true, token }
+}
+
+exports.authorLogInGoogle = async (tokenPayload) => {
+    const { email, sub: googleId, email_verified } = tokenPayload
+
+    if (!email_verified) {
+        return { success: false, message: 'Xác thực email thất bại!' }
+    }
+
+    const existingUser = await usersModel.findOne({ email }).select('+googleId')
+    if (!existingUser) {
+        return { success: false, message: 'Người dùng không tồn tại. Vui lòng đăng ký trên App!' }
+    }
+
+    if (existingUser.role !== 'author') {
+        return { success: false, message: 'Vui lòng chuyển thành Tác Giả!' }
+    }
+
+    if(googleId !== existingUser.googleId){
+         return { success: false, message: 'Có lỗi xảy ra với tài khoản Google' }
+    }
+
+    const token = jwt.sign({
+        userId: existingUser._id,
+        email: existingUser.email,
+        verified: existingUser.verified,
+        name: existingUser.name,
+        gender: existingUser.gender,
+        dob: existingUser.dob,
+        avatar: existingUser.avatar,
+        role: existingUser.role,
+    }, process.env.TOKEN_SECRET, { expiresIn: '1d' })
+
+    existingUser.authorToken = token
+    await existingUser.save()
+
+    return {
+        success: true,
+        message: "Đăng nhập thành công!",
         token
     }
 }
