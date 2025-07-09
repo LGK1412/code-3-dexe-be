@@ -1,10 +1,30 @@
-const express = require('express')
+const express = require("express");
+const {
+  authhenticateUser,
+  authRole,
+} = require("../middlewares/authMiddleware");
 
-const userController = require('../controllers/userController')
-const authMiddleware = require('../middlewares/authMiddleware')
+const userController = require("../controllers/userController");
 
-const router = express.Router()
+const router = express.Router();
 
-router.patch('/:userId/update-profile',authMiddleware.authhenticateUser, authMiddleware.authRole(['user','author']), userController.updateUserProfile)
+router.patch(
+  "/:userId/update-profile",
+  authhenticateUser,
+  authRole(["user", "author"]),
+  userController.updateUserProfile
+);
 
-module.exports = router
+router.post(
+  "/:id/toggle-follow",
+  authhenticateUser,
+  userController.toggleFollow
+);
+
+router.get("/:id/followers", userController.getFollowers);
+
+router.get("/:id/following", userController.getFollowing);
+
+router.get("/:id/follow-stats", userController.getFollowStats);
+
+module.exports = router;
