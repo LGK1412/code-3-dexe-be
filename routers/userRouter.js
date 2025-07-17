@@ -24,7 +24,7 @@ router.patch(
 
 router.post(
   "/:id/toggle-follow",
-  authhenticateUser,
+  authMiddleware.authhenticateUser,
   userController.toggleFollow
 );
 
