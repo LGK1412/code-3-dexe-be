@@ -16,6 +16,8 @@ const categoryRouter = require("./routers/categoryRoutes.js");
 const mangaRouter = require("./routers/mangaRouter.js");
 const chapterRouter = require("./routers/chapterRouter.js");
 const commentRouter = require("./routers/commentRoutes.js");
+const notificationRoutes = require("./routers/notificationRoutes.js");
+
 // ----------- Hết khai báo Router-------------//
 
 const app = express();
@@ -78,6 +80,8 @@ app.use("/api/manga", mangaRouter);
 app.use("/api/chapter", chapterRouter);
 
 app.use("/api/comment", commentRouter);
+
+app.use("/api/notifications", notificationRoutes);
 //----------- Hết router-------------//
 
 app.get("/", (req, res) => {

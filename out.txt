@@ -1,0 +1,71 @@
+Folder PATH listing
+Volume serial number is E869-A6F7
+E:.
+│   .env
+│   .gitignore
+│   index.js
+│   out.txt
+│   package-lock.json
+│   package.json
+│   README.md
+│   
+├───assets
+│   ├───avatars
+│   │       684e8904d179776890f3a9e0.jpg
+│   │       avatar.png
+│   │       
+│   ├───chapterImages
+│   │       1750936317730-850047071.png
+│   │       1750936317733-731656963.png
+│   │       1750936317861-107176003.png
+│   │       1750936333247-443787672.png
+│   │       1750936333248-43717787.png
+│   │       
+│   └───thumbnailsManga
+│           1750871955618-818349415.jpg
+│           1750917962956-160610787.jpg
+│           
+├───controllers
+│       authController.js
+│       categoryController.js
+│       chapterController.js
+│       imageController.js
+│       mangaController.js
+│       testController.js
+│       userController.js
+│       
+├───middlewares
+│       authMiddleware.js
+│       googleAuth.js
+│       identification.js
+│       imageMiddleware.js
+│       sendEmail.js
+│       validator.js
+│       
+├───models
+│       category.model.js
+│       chapter.model.js
+│       manga.model.js
+│       users.model.js
+│           
+├───routers
+│       authRouter.js
+│       categoryRoutes.js
+│       chapterRouter.js
+│       imageRouter.js
+│       mangaRouter.js
+│       testRouter.js
+│       userRouter.js
+│       
+├───services
+│       authService.js
+│       categoryService.js
+│       chapterService.js
+│       imageService.js
+│       mangaService.js
+│       userServices.js
+│       
+├───thumbnailsManga
+└───utils
+        hasing.js
+        
