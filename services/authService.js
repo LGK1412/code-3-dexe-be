@@ -133,7 +133,7 @@ exports.sendVerificationCode = async (email) => {
         return { success: true, message: 'Đã gửi mã!' }
     }
 
-    return { success: true, message: 'Gửi mã thất bại!' }
+    return { success: false, message: 'Gửi mã thất bại!' }
 }
 
 exports.verifyVerificationCode = async (email, providedCode) => {
@@ -321,17 +321,17 @@ exports.verifyForgotPasswordCode = async (email, providedCode, newPassword) => {
 }
 
 exports.logInGoogle = async (tokenPayload) => {
+    // console.log(tokenPayload)
     const { name, email, picture: avatar, sub: googleId, email_verified } = tokenPayload
 
     if (!email_verified) {
         return { success: false, message: 'Xác thực email thất bại!' }
     }
-
     let user = await usersModel.findOne({ email }).select("+googleId")
-
+    // console.log(user)
     if (user) {
-        if (googleId !== user.googleId) {
-            return { success: false, message: 'Xác thực email thất bại!' }
+        if (googleId !== user.googleId || !googleId) {
+            return { success: false, message: 'Tài khoản này không đăng nhập bằng google' }
         }
     } else {
         user = new usersModel({ name, email, avatar, googleId, verified: true })
@@ -349,7 +349,15 @@ exports.logInGoogle = async (tokenPayload) => {
         role: user.role,
     }, process.env.TOKEN_SECRET, { expiresIn: '180d' })
 
+    if (!token) {
+        return {
+            success: false,
+            message: "Lỗi server"
+        }
+    }
+
     user.loginToken = token
+
     await user.save()
 
     return {
@@ -416,8 +424,8 @@ exports.authorLogInGoogle = async (tokenPayload) => {
         return { success: false, message: 'Vui lòng chuyển thành Tác Giả!' }
     }
 
-    if(googleId !== existingUser.googleId){
-         return { success: false, message: 'Có lỗi xảy ra với tài khoản Google' }
+    if (googleId !== existingUser.googleId) {
+        return { success: false, message: 'Có lỗi xảy ra với tài khoản Google' }
     }
 
     const token = jwt.sign({

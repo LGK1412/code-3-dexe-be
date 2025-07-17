@@ -10,6 +10,8 @@ exports.verifyGoogleToken = async (req, res, next) => {
         return res.status(401).json({ error: 'No token provided' });
     }
 
+    // console.log(token)
+
     try {
         // console.log('Verifying token:', token);
         const ticket = await client.verifyIdToken({
