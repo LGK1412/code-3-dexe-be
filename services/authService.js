@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const { signupSchema, signinSchema, acceptCodeSchema, acceptLogoutSchema, changePasswordSchema, acceptChangePassCodeSchema } = require("../middlewares/validator")
+const { signupSchema, signinSchema, acceptCodeSchema, acceptChangePassCodeSchema } = require("../middlewares/validator")
 const usersModel = require("../models/users.model")
 const { doHasing, doHashValidation, hmacProcess } = require("../utils/hasing")
 const transport = require('../middlewares/sendEmail')
@@ -24,8 +24,6 @@ async function generateUniqueUsername() {
 
     return name
 }
-
-
 
 exports.singup = async (email, password) => {
 
@@ -113,7 +111,7 @@ exports.sendVerificationCode = async (email) => {
         return { success: false, message: 'Người dùng không tồn tại!' }
     }
     if (existingUser.verified) {
-        return { success: false, message: 'Người dùng không được xác minh!' }
+        return { success: false, message: 'Người dùng đã được xác minh!' }
     }
 
     const codeValue = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
@@ -416,8 +414,8 @@ exports.authorLogInGoogle = async (tokenPayload) => {
         return { success: false, message: 'Vui lòng chuyển thành Tác Giả!' }
     }
 
-    if(googleId !== existingUser.googleId){
-         return { success: false, message: 'Có lỗi xảy ra với tài khoản Google' }
+    if (googleId !== existingUser.googleId) {
+        return { success: false, message: 'Có lỗi xảy ra với tài khoản Google' }
     }
 
     const token = jwt.sign({

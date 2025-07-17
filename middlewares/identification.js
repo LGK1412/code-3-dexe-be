@@ -26,11 +26,11 @@ exports.identifyInfo = async (req, res, next) => {
             existingUser.verified;
         
         if (!allEmailsMatch || !allVerified) {
-            return res.status(400).json({ success: false, message: 'Identification failed!' });
+            return res.status(400).json({ success: false, message: 'Xác minh người dùng thất bại!' });
         }
 
         next();
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Something went wrong: ' + error.message });
+        res.status(500).json({ success: false, message: 'Có lỗi: ' + error.message });
     }
 };
