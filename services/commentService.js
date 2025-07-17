@@ -1,135 +1,29 @@
-const Comment = require("../models/comment.model");
-const notificationEmitter = require("../events/notification.events");
+const { Types } = require("mongoose");
+const commentModel = require("../models/comment.model");
 
-// user / author tạo comment cho manga / chapter
-exports.createComment = async ({
-  author,
-  content,
-  mangaId,
-  chapterId,
-  parentId,
-}) => {
-  if (!content) {
-    throw new Error("Content is required.");
+exports.getCommentByMangaById = async (mangaId) => {
+  // 1) validate the ID
+  if (!Types.ObjectId.isValid(mangaId)) {
+    return { success: false, message: "Invalid manga ID" };
   }
 
-  const newComment = new Comment({ content, author });
-
-  // Nếu comment cha (reply)
-  if (parentId) {
-    const parentComment = await Comment.findById(parentId);
-    if (!parentComment) throw new Error("Comment cha không tồn tại.");
-
-    newComment.parent = parentId;
-    newComment.manga = parentComment.manga;
-    newComment.chapter = parentComment.chapter;
-  } else {
-    // Nếu là comment chính (gửi cho manga hoặc chapter)
-    if (mangaId) newComment.manga = mangaId;
-    if (chapterId) newComment.chapter = chapterId;
-    if (!mangaId && !chapterId) {
-      throw new Error("Phải có mangaId hoặc chapterId nếu không phải reply.");
-    }
-  }
-
-  const savedComment = await newComment.save();
-  // Gửi thông báo
-  // Nếu là reply thì gửi notification cho người tạo comment cha
-  if (parentId && parentComment.author.toString() !== author.toString()) {
-    notificationEmitter.emit("commentReplied", {
-      senderId: author,
-      receiverId: parentComment.author,
-      commentId: newComment._id,
-    });
-  }
-  return savedComment;
-};
-
-exports.getCommentsByTarget = async ({ mangaId, chapterId }) => {
-  const query = mangaId ? { manga: mangaId } : { chapter: chapterId };
-
-  return await Comment.find({
-    ...query,
-    parentComment: null,
-    isDeleted: false,
-    isHidden: false,
-  })
-    .populate("author", "name avatar role")
-    .populate({
-      path: "replies",
-      match: { isDeleted: false },
-      populate: { path: "author", select: "name avatar role" },
-    })
+  // 2) query on the correct field
+  const comments = await commentModel
+    .find({ mangaId }) // ← use mangaId, not _mangaId
     .sort({ createdAt: -1 });
-};
 
-// Tìm các comment con
-exports.getReplies = async (parentCommentId) => {
-  return await Comment.find({
-    parentComment: parentCommentId,
-    isDeleted: false,
-  })
-    .populate("author", "name avatar role")
-    .sort({ createdAt: 1 });
-};
-
-// Like comment
-exports.toggleLikeComment = async (commentId, userId) => {
-  const comment = await Comment.findById(commentId);
-  if (!comment) throw new Error("Comment không tồn tại!");
-
-  const likedIndex = comment.likes.indexOf(userId);
-
-  if (likedIndex === -1) {
-    // Chưa like → like
-    comment.likes.push(userId);
-  } else {
-    // Đã like → unlike
-    comment.likes.splice(likedIndex, 1);
+  if (comments.length === 0) {
+    return { success: false, message: "No comments found for this manga" };
   }
 
-  await comment.save();
-  // Gửi thông báo
-  if (comment.author.toString() !== userId.toString()) {
-    notificationEmitter.emit("commentLiked", {
-      senderId: userId,
-      receiverId: comment.author,
-      commentId: comment._id,
-    });
-  }
-  return comment;
+  return { success: true, comments };
 };
 
-// Xóa mềm comment
-exports.softDeleteComment = async (commentId, userId, role) => {
-  const comment = await Comment.findById(commentId);
-  if (!comment) throw new Error("Comment not found");
-
-  const isOwner = comment.author.toString() === userId.toString();
-  const isAdmin = role === "admin";
-
-  if (!isOwner && !isAdmin) {
-    throw new Error("Not authorized to delete this comment");
+exports.addComment = async (mangaId, userId, content) => {
+  try {
+    const comment = await require('../models/comment.model').create({ manga: mangaId, user: userId, content });
+    return { success: true, comment };
+  } catch (err) {
+    return { success: false, message: err.message };
   }
-
-  // Xóa mềm comment chính
-  comment.isDeleted = true;
-  await comment.save();
-
-  // Xóa mềm các reply
-  await Comment.updateMany(
-    { parent: commentId },
-    { $set: { isDeleted: true } }
-  );
-
-  return true;
-};
-
-// Admin bỏ ẩn
-exports.adminUnhideComment = async (commentId) => {
-  return await Comment.findByIdAndUpdate(
-    commentId,
-    { isHidden: false },
-    { new: true }
-  );
 };
