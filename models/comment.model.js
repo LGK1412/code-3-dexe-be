@@ -24,7 +24,13 @@ const CommentSchema = new mongoose.Schema(
     mangaId: {
       type: Types.ObjectId,
       ref: "Manga",
-      required: [true, "Manga ID is required"],
+      required: false, // Không bắt buộc nữa
+      index: true,
+    },
+    chapterId: {
+      type: Types.ObjectId,
+      ref: "chapters",
+      required: false, // Comment cho chapter
       index: true,
     },
     content: {
@@ -33,7 +39,6 @@ const CommentSchema = new mongoose.Schema(
       trim: true,
     },
     reactions: { type: [ReactionSchema], default: [] },
-    likes: [{ type: require('mongoose').Schema.Types.ObjectId, ref: 'User' }],
     reports: [
       {
         user: { type: require('mongoose').Schema.Types.ObjectId, ref: 'User' },

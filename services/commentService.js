@@ -21,7 +21,7 @@ exports.getCommentByMangaById = async (mangaId) => {
 
 exports.addComment = async (mangaId, userId, content) => {
   try {
-    const comment = await require('../models/comment.model').create({ manga: mangaId, user: userId, content });
+    const comment = await require('../models/comment.model').create({ mangaId, userId, content });
     return { success: true, comment };
   } catch (err) {
     return { success: false, message: err.message };

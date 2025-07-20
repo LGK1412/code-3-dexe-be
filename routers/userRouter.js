@@ -7,24 +7,25 @@ const router = express.Router();
 
 router.patch(
   "/:userId/update-profile",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   authMiddleware.authRole(["user", "author"]),
   userController.updateUserProfile
 );
 router.patch(
   "/:userId/favourites",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   userController.toggleFavouriteManga
 );
+
 router.patch(
   "/:userId/follow-author",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   userController.toggleFollowAuthor
 );
 
 router.post(
   "/:id/toggle-follow",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   userController.toggleFollow
 );
 

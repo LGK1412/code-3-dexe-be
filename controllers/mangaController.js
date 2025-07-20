@@ -234,8 +234,8 @@ exports.rateManga = async (req, res) => {
   try {
     const manga = await require('../models/manga.model').findById(id);
     if (!manga) return res.status(404).json({ success: false, message: 'Không tìm thấy manga' });
-    // Kiểm tra user đã vote chưa
-    const existing = manga.rating.find(r => r.userId.toString() === userId);
+    // Kiểm tra user đã vote chưa (bỏ qua các rating cũ userId=null)
+    const existing = manga.rating.find(r => r.userId && r.userId.toString() === userId);
     if (existing) {
       existing.value = value; // update vote
     } else {

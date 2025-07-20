@@ -38,12 +38,10 @@ const mangaSchema = new mongoose.Schema(
       index: true,
       default: [],
     },
-    rating: {
-      type: [Number],
-      min: [0, "Rating must be at least 0"],
-      max: [5, "Rating cannot exceed 5"],
-      default: [],
-    },
+    rating: [{
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+      value: { type: Number, min: 1, max: 5 }
+    }],
     author: {
       type: Types.ObjectId,
       ref: "users",
@@ -78,18 +76,12 @@ const mangaSchema = new mongoose.Schema(
 // Virtual for average rating
 mangaSchema.virtual("averageRating").get(function () {
   if (!this.rating.length) return 0;
-  return this.rating.reduce((sum, val) => sum + val, 0) / this.rating.length;
+  return this.rating.reduce((sum, r) => sum + r.value, 0) / this.rating.length;
 });
 
-// Text index for search
-mangaSchema.index({ name: "text", description: "text" });
+mangaSchema.virtual("voteCount").get(function () {
+  return this.rating.length;
+});
 
-// Soft delete middleware
-mangaSchema.pre("find", function () {
-  this.where({ isDelete: false });
-});
-mangaSchema.pre("findOne", function () {
-  this.where({ isDelete: false });
-});
 
 module.exports = mongoose.model("mangas", mangaSchema);

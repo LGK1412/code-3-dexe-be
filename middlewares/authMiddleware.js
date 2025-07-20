@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
 
-exports.authhenticateUser = async (req, res, next) => {
+exports.authenticateUser = async (req, res, next) => {
     const token = req.header('Authorization')?.split(' ')[1]
-
+    console.log(token)
     if (!token) {
         return res.status(401).json({ success: false, messages: 'Lỗi ko thấy token' })
     }

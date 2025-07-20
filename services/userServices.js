@@ -1,6 +1,7 @@
 const User = require("../models/users.model");
 const jwt = require("jsonwebtoken");
 const notificationEmitter = require("../events/notification.events");
+const mongoose = require('mongoose')
 
 exports.updateUserProfile = async (userId, name, gender, dob, role) => {
   try {
@@ -114,4 +115,56 @@ exports.getFollowStats = async (userId) => {
     followersCount: user.followers.length,
     followingCount: user.following.length,
   };
+};
+
+exports.toggleFavouriteManga = async (userId, mangaId) => {
+  const user = await User.findById(userId);
+  if (!user) return { success: false, message: "Không tìm thấy user" };
+  if (!mongoose.Types.ObjectId.isValid(mangaId)) return { success: false, message: "Manga ID không hợp lệ" };
+
+  const idx = user.favourites.findIndex(id => id.toString() === mangaId);
+  if (idx === -1) {
+    user.favourites.push(mangaId);
+  } else {
+    user.favourites.splice(idx, 1);
+  }
+
+  await user.save();
+  return { success: true, message: "Cập nhật favourites thành công", favourites: user.favourites };
+};
+
+exports.toggleFollowAuthor = async (userId, authorId) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return { success: false, message: "User ID không hợp lệ" };
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(authorId)) {
+      return { success: false, message: "Author ID không hợp lệ" };
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return { success: false, message: "Không tìm thấy người dùng" };
+    }
+
+    const isFollowing = user.followAuthors.includes(authorId);
+
+    if (isFollowing) {
+      user.followAuthors.pull(authorId);
+    } else {
+      user.followAuthors.push(authorId);
+    }
+
+    await user.save();
+
+    return {
+      success: true,
+      message: "Cập nhật follow tác giả thành công",
+      followAuthors: user.followAuthors,
+    };
+  } catch (err) {
+    console.error("Lỗi trong toggleFollowAuthor:", err.message);
+    return { success: false, message: "Lỗi server" };
+  }
 };

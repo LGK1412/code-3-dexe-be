@@ -63,47 +63,18 @@ exports.getFollowStats = async (req, res) => {
 };
 
 exports.toggleFavouriteManga = async (req, res) => {
-  const { userId } = req.params;
+  const userId = req.params.userId;
   const { mangaId } = req.body;
 
-  try {
-    const result = await userService.toggleFavouriteManga(userId, mangaId);
-    if (!result.success) {
-      return res.status(400).json({ success: false, message: result.message });
-    }
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: result.message,
-        favourites: result.favourites,
-      });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: error.message || "Lỗi server" });
-  }
+  const result = await userService.toggleFavouriteManga(userId, mangaId);
+  return res.status(result.success ? 200 : 400).json(result);
 };
+
 
 exports.toggleFollowAuthor = async (req, res) => {
-  const { userId } = req.params;
+  const  userId  = req.params.userId;
   const { authorId } = req.body;
 
-  try {
     const result = await userService.toggleFollowAuthor(userId, authorId);
-    if (!result.success) {
-      return res.status(400).json({ success: false, message: result.message });
-    }
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: result.message,
-        folowAuthors: result.folowAuthors,
-      });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: error.message || "Lỗi server" });
-  }
-};
+      return res.status(result.success ? 200 : 400).json(result);
+    };

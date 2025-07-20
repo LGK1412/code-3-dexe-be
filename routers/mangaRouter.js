@@ -9,7 +9,7 @@ const imageMiddleware = require("../middlewares/imageMiddleware");
 router.post(
   "/",
   imageMiddleware.uploadThumbnail.single("image"),
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   authMiddleware.authRole(["author"]),
   mangaController.addNewManga
 );
@@ -18,20 +18,20 @@ router.get("/:id", mangaController.getMangaDetail);
 router.put(
   "/:id",
   imageMiddleware.uploadThumbnail.single("image"),
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   authMiddleware.authRole(["author"]),
   mangaController.updateManga
 );
 router.delete(
   "/:id",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   authMiddleware.authRole(["author"]),
   mangaController.deleteManga
 );
 
 router.post(
   "/:id/rate",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   mangaController.rateManga
 );
 

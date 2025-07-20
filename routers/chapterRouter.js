@@ -8,7 +8,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 router.post(
   "/:mangaId",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   authMiddleware.authRole(["author"]),
   uploadChapterImages.array("images"),
   chapterController.addNewChapter
@@ -21,14 +21,14 @@ router.get(
 router.get("/get-chapter/:chapterId", chapterController.getChapterById);
 router.delete(
   "/:chapterId",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   authMiddleware.authRole(["author"]),
   uploadChapterImages.array("images"),
   chapterController.deleteChapter
 );
 router.patch(
   "/:chapterId",
-  authMiddleware.authhenticateUser,
+  authMiddleware.authenticateUser,
   authMiddleware.authRole(["author"]),
   uploadChapterImages.array("images"),
   chapterController.updateChapter

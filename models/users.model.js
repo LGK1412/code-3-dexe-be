@@ -17,14 +17,15 @@ const userSchema = mongoose.Schema({
         trim: true,
         select: false
     },
-    favourites: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Manga'
-    },
-    folowAuthors: {
-        type: [mongoose.Schema.Types.ObjectId],
+    favourites: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'mangas'
+      }]
+      ,
+      followAuthors: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
-    },
+    }],
     verified: {
         type: Boolean,
         default: false
