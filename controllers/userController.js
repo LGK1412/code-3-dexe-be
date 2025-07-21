@@ -1,4 +1,5 @@
 const userService = require("../services/userServices");
+const notificationEmitter = require("../events/notification.events");
 
 exports.updateUserProfile = async (req, res) => {
   const { userId } = req.params;
@@ -25,10 +26,19 @@ exports.updateUserProfile = async (req, res) => {
 
 exports.toggleFollow = async (req, res) => {
   try {
+
     const followerId = req.user.userId;
     const followingId = req.params.id;
 
     const result = await userService.toggleFollow(followerId, followingId);
+
+    if (followerId.toString() !== followingId.toString() && result?.isFollowing) {
+      notificationEmitter.emit("userFollowed", {
+        senderId: followerId,
+        receiverId: followingId,
+      });
+    }
+
     return res.status(200).json({ success: true, ...result });
   } catch (error) {
     return res.status(400).json({ success: false, message: error.message });
@@ -70,11 +80,23 @@ exports.toggleFavouriteManga = async (req, res) => {
   return res.status(result.success ? 200 : 400).json(result);
 };
 
-
 exports.toggleFollowAuthor = async (req, res) => {
-  const  userId  = req.params.userId;
-  const { authorId } = req.body;
+  try {
+    const userId = req.params.userId;
+    const { authorId } = req.body;
 
     const result = await userService.toggleFollowAuthor(userId, authorId);
-      return res.status(result.success ? 200 : 400).json(result);
-    };
+
+    if (result?.success && userId !== authorId) {
+      notificationEmitter.emit("userFollowed", {
+        senderId: userId,
+        receiverId: authorId,
+      });
+    }
+    console.log("follow success")
+
+    return res.status(result.success ? 200 : 400).json(result);
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

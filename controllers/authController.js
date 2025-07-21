@@ -161,15 +161,16 @@ exports.logInGoogle = async (req, res) => {
 
 exports.authorSingin = async (req, res) => {
     const { email, password } = req.body
+    
     try {
         const result = await authService.authorSingin(email, password)
-
+        
         if (!result.success) {
             return res.status(400).json({ success: false, message: result.message })
         }
 
         const token = result.token
-
+        
         return res.status(200).json({ success: true, token, message: result.message })
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message || "Lỗi server" })

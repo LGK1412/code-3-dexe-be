@@ -391,7 +391,7 @@ exports.authorSingin = async (email, password) => {
     if (!result) {
         return { success: false, message: 'Mật khẩu không hợp lệ!' }
     }
-
+console.log(email)
     const token = jwt.sign({
         userId: existingUser._id,
         email: existingUser.email,

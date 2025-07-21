@@ -26,10 +26,6 @@ const mangaSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      validate: {
-        validator: (url) => /^https?:\/\/[^\s$.?#].[^\s]*$/.test(url),
-        message: "Invalid image URL",
-      },
     },
     categories: {
       type: [Types.ObjectId],

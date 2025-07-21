@@ -39,7 +39,7 @@ exports.getAllManga = async () => {
     mangas.map(async (manga) => {
       const categoryPromises = manga.categories.map(async (categoryId) => {
         const result = await categoryService.getCategoryNameById(categoryId);
-        console.log(result);
+        // console.log(result);
         return result.success ? result.category : null;
       });
       const categories = (await Promise.all(categoryPromises)).filter(
@@ -74,7 +74,7 @@ exports.getMangaById = async (id) => {
     mangas.map(async (manga) => {
       const categoryPromises = manga.categories.map(async (categoryId) => {
         const result = await categoryService.getCategoryNameById(categoryId);
-        console.log(result);
+        // console.log(result);
         return result.success ? result.category : null;
       });
       const categories = (await Promise.all(categoryPromises)).filter(
@@ -159,7 +159,7 @@ exports.getAllTrendingManga = async () => {
       mangas.map(async (manga) => {
         const categoryPromises = manga.categories.map(async (categoryId) => {
           const result = await categoryService.getCategoryNameById(categoryId);
-          console.log(result);
+          // console.log(result);
           return result.success ? result.category : null;
         });
         const categories = (await Promise.all(categoryPromises)).filter(
