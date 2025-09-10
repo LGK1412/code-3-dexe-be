@@ -1,4 +1,4 @@
-Setuop .env:
+Setup .env:
 
 PORT
 
