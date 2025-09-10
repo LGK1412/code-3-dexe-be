@@ -1,6 +1,6 @@
-# project-manga
-small project for study, app android BE, expressjs + mongoose
-
----
-
-npm i về chạy thôi. Liên hệ t để cho cái `.env `
+PORT
+TOKEN_SECRET
+NODE_CODE_SENDING_EMAIL_ADDRESS
+NODE_CODE_SENDING_EMAIL_PASSWORD - App pass của mail
+HMAC_VERIFICATION_CODE_SECRET - dùng cho cái hash code của OTP
+MONGO_URI
