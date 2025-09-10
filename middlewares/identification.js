@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { acceptLogoutSchema } = require('./validator');
-const usersModel = require('../models/users.model');
+const usersModel = require('../models/users');
 
 exports.identifyInfo = async (req, res, next) => {
     const { email, loginToken } = req.body;

@@ -9,16 +9,13 @@ const passport = require("passport");
 const GoogleStartegy = require("passport-google-oauth20");
 // ----------- Khai báo Router-------------//
 const authRouter = require("./routers/authRouter.js");
-const testRouter = require("./routers/testRouter.js");
-const userRouter = require("./routers/userRouter.js");
-const imageRouter = require("./routers/imageRouter.js");
-const categoryRouter = require("./routers/categoryRoutes.js");
-const mangaRouter = require("./routers/mangaRouter.js");
-const chapterRouter = require("./routers/chapterRouter.js");
-const commentRouter = require("./routers/commentRoutes.js");
-const notificationRoutes = require("./routers/notificationRoutes.js");
-const aiRouter = require("./routers/aiRouter.js");
-
+const productRoute = require("./routers/productRoute.js")
+const categoryRoute = require("./routers/categoryRoute.js")
+const cartRoute = require('./routers/cartRoute.js')
+const groupRoute = require('./routers/groupRoute.js')
+const styleRoute = require('./routers/styleRoutesr.js')
+const userRouter = require('./routers/userRouter.js')
+const policyRouter = require('./routers/policyRouter.js')
 // ----------- Hết khai báo Router-------------//
 
 const app = express();
@@ -49,13 +46,23 @@ mongoose
 //----------- Cho Router-------------//
 app.use("/api/auth", authRouter);
 
-app.use("/api/test", testRouter); // cho test ko quan trọng
+app.use("/api/product", productRoute)
 
-app.use("/api/image", imageRouter);
-app.use("/avatars", express.static("assets/avatars"));
+app.use("/api/category", categoryRoute)
+
+app.use("/api/cart", cartRoute)
+
+app.use("/api/group", groupRoute)
+
+app.use("/api/style", styleRoute)
+
+app.use("/api/user", userRouter)
+
+app.use("/api/policy", policyRouter)
+// Cho assets
 app.use(
-  "/thumbnails",
-  express.static("assets/thumbnailsManga", {
+  "/productImg",
+  express.static("assets/productImages", {
     setHeaders: (res) => {
       res.set("Access-Control-Allow-Origin", "*");
       res.set("Cross-Origin-Resource-Policy", "cross-origin");
@@ -63,27 +70,14 @@ app.use(
   })
 );
 app.use(
-  "/chapter",
-  express.static("assets/chapterImages", {
+  "/model",
+  express.static("assets/models", {
     setHeaders: (res) => {
       res.set("Access-Control-Allow-Origin", "*");
       res.set("Cross-Origin-Resource-Policy", "cross-origin");
     },
   })
 );
-
-app.use("/api/user", userRouter);
-
-app.use("/api/category", categoryRouter);
-
-app.use("/api/manga", mangaRouter);
-
-app.use("/api/chapter", chapterRouter);
-
-app.use("/api/comment", commentRouter);
-
-app.use("/api/notifications", notificationRoutes);
-app.use("/api/ai", aiRouter);
 //----------- Hết router-------------//
 
 app.get("/", (req, res) => {

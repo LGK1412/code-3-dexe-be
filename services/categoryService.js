@@ -1,104 +1,87 @@
-const { Types } = require("mongoose");
-const categoryModel = require("../models/category.model");
-const mangaModel = require("../models/manga.model");
+const categoryModel = require('../models/category')
+const productModel = require('../models/product')
+const groupModel = require('../models/group');
+
+exports.addCategory = async (name, isHide, description) => {
+    const existing = await categoryModel.findOne({ name });
+    if (existing) {
+        return { success: false, message: "Tên category đã tồn tại!" };
+    }
+
+    const newCategory = new categoryModel({
+        name,
+        isHide,
+        description,
+    });
+
+    await newCategory.save();
+
+    return { success: true, category: newCategory };
+};
+
+exports.updateCategory = async (id, name, isHide, description) => {
+    const updated = await categoryModel.findByIdAndUpdate(
+        id,
+        { name, isHide, description },
+        { new: true }
+    );
+
+    if (!updated) {
+        return { success: false, message: "Không tìm thấy category để cập nhật!" };
+    }
+
+    return { success: true };
+};
+
+exports.deleteCategory = async (id) => {
+    const productExists = await productModel.findOne({ category: id });
+    if (productExists) {
+        return {
+            success: false,
+            message: "Không thể xoá category vì vẫn còn sản phẩm đang sử dụng!"
+        };
+    }
+
+    // Xoá category khỏi tất cả group trước
+    await groupModel.updateMany(
+        { category: id },
+        { $pull: { category: id } }
+    );
+
+    const deletedCategory = await categoryModel.findByIdAndDelete(id);
+    if (!deletedCategory) {
+        return { success: false, message: "Không tìm thấy category để xoá!" };
+    }
+
+    return { success: true };
+};
 
 exports.getAllCategory = async () => {
-  try {
-    const categories = await categoryModel.find().lean();
-    return {
-      success: true,
-      categories,
-    };
-  } catch (err) {
-    return {
-      success: false,
-      message: "Failed to retrieve categories",
-    };
-  }
-};
+    const categories = await categoryModel.find()
 
-exports.getCategoryNameById = async (categoryId) => {
-  if (!Types.ObjectId.isValid(categoryId)) {
-    return {
-      success: false,
-      message: "Invalid category ID",
-    };
-  }
-  try {
-    const category = await categoryModel
-      .findById(categoryId)
-      .select("name")
-      .lean();
+    if (categories.length === 0) {
+        return { success: false, message: "Không tìm thấy category!" };
+    }
+
+    return { success: true, data: categories };
+}
+
+exports.getAllCategoryNotHide = async () => {
+    const categories = await categoryModel.find({ isHide: false })
+
+    if (categories.length === 0) {
+        return { success: false, message: "Không tìm thấy category!" };
+    }
+
+    return { success: true, data: categories };
+}
+
+exports.getCategoryById = async (id) => {
+    const category = await categoryModel.findById(id)
+
     if (!category) {
-      return {
-        success: false,
-        message: "Category not found",
-      };
-    }
-    return {
-      success: true,
-      category,
-    };
-  } catch (err) {
-    return {
-      success: false,
-      message: "Failed to retrieve category",
-    };
-  }
-};
-
-exports.getAllMangaByCategory = async (categoryId) => {
-  if (!Types.ObjectId.isValid(categoryId)) {
-    return {
-      success: false,
-      message: "Invalid category ID",
-    };
-  }
-  try {
-    // Fetch manga with the specified category
-    const mangas = await mangaModel
-      .find({
-        categories: categoryId,
-        isDelete: false,
-      })
-      .lean();
-
-    if (!mangas.length) {
-      return {
-        success: true,
-        mangas: [],
-      };
+        return { success: false, message: "Không tìm thấy category!" };
     }
 
-    // Get all unique category IDs from the mangas
-    const categoryIds = [
-      ...new Set(mangas.flatMap((manga) => manga.categories.map(String))),
-    ];
-
-    // Fetch all categories in one query
-    const categories = await categoryModel.find({ _id: { $in: categoryIds } });
-    // Create a category map for quick lookup
-    const categoryMap = categories.reduce((map, cat) => {
-      map[cat._id.toString()] = cat;
-      return map;
-    }, {});
-
-    // Map mangas with their category details
-    const mangasWithCategories = mangas.map((manga) => ({
-      ...manga,
-      categories: manga.categories
-        .map((catId) => categoryMap[catId.toString()])
-        .filter((cat) => cat), // Remove undefined categories
-    }));
-
-    return {
-      success: true,
-      mangas: mangasWithCategories,
-    };
-  } catch (err) {
-    return {
-      success: false,
-      message: "Failed to retrieve manga by category",
-    };
-  }
-};
+    return { success: true, data: category };
+}

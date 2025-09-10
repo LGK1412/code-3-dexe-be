@@ -29,9 +29,7 @@ exports.acceptLogoutSchema = Joi.object({
 })
 
 exports.acceptChangePassCodeSchema = Joi.object({
-    email: Joi.string().min(6).max(60).required().email({
-        tlds: { allow: ['com', 'net', 'vn'] }
-    }),
-    providedCode: Joi.number().required(),
-    newPassword: Joi.string().required().pattern(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]{6,30}$/)
-})
+    email: Joi.string().min(6).max(60).required(), // chỉ check độ dài
+    providedCode: Joi.number().required(),         // vẫn giữ code là number
+    newPassword: Joi.string().min(6).max(30).required() // chỉ check độ dài
+});

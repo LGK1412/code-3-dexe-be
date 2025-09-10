@@ -25,13 +25,11 @@ exports.uploadThumbnail = multer({ storage: thumbnailStorage })
 
 const chapterImageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // console.log("🟨 Đang xử lý lưu ảnh:", file.originalname)
         cb(null, "assets/chapterImages/")
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname)
         const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`
-        // console.log("✅ File được lưu tên:", fileName)
         cb(null, fileName)
     },
 })

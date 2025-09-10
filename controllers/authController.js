@@ -3,9 +3,9 @@ const authService = require("../services/authService")
 // ... các hàm trên giữ nguyên
 
 exports.singup = async (req, res) => {
-    const { email, password } = req.body
+    const { email, password, dob } = req.body
     try {
-        const result = await authService.singup(email, password)
+        const result = await authService.singup(email, password, dob)
 
         if (!result.success) {
             return res.status(400).json({ success: false, message: result.message })
@@ -49,68 +49,6 @@ exports.logout = async (req, res) => {
     }
 }
 
-exports.sendVerificationCode = async (req, res) => {
-    const { email } = req.body
-
-    try {
-        const result = await authService.sendVerificationCode(email)
-        if (!result.success) {
-            return res.status(400).json({ success: false, message: result.message })
-        }
-        return res.status(200).json({ success: true, message: 'Gửi mã thành công!' })
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message || "Lỗi server" })
-    }
-}
-
-exports.verifyVerificationCode = async (req, res) => {
-    const { email, providedCode } = req.body
-
-    try {
-        const result = await authService.verifyVerificationCode(email, providedCode)
-
-        if (!result.success) {
-            return res.status(400).json({ success: false, message: result.message })
-        }
-
-        return res.status(200).json({ success: true, message: 'Xác thực thành công!' })
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message || "Lỗi server" })
-    }
-}
-
-exports.sendChangePasswordCode = async (req, res) => {
-    const { email, loginToken } = req.body
-
-    try {
-        const result = await authService.sendChangePasswordCode(email)
-
-        if (!result.success) {
-            return res.status(400).json({ success: false, message: result.message })
-        }
-
-        return res.status(200).json({ success: true, message: result.message })
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message || "Lỗi server" })
-    }
-}
-
-exports.verifyChangePasswordCode = async (req, res) => {
-    const { email, providedCode, newPassword } = req.body
-
-    try {
-        const result = await authService.verifyChangePasswordCode(email, providedCode, newPassword)
-
-        if (!result.success) {
-            return res.status(400).json({ success: false, message: result.message })
-        }
-
-        return res.status(200).json({ success: true, message: result.message })
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message || "Lỗi server" })
-    }
-}
-
 exports.sendForgotPasswordCode = async (req, res) => {
     const { email } = req.body
 
@@ -145,9 +83,9 @@ exports.verifyForgotPasswordCode = async (req, res) => {
 
 exports.logInGoogle = async (req, res) => {
     try {
-        const tokenPayload = req.tokenPayload
+        const payload = req.body;
 
-        const result = await authService.logInGoogle(tokenPayload)
+        const result = await authService.logInGoogle(payload)
 
         if (!result.success) {
             return res.status(400).json({ success: false, message: result.message })
@@ -161,34 +99,34 @@ exports.logInGoogle = async (req, res) => {
 
 exports.authorSingin = async (req, res) => {
     const { email, password } = req.body
-    
+
     try {
         const result = await authService.authorSingin(email, password)
-        
+
         if (!result.success) {
             return res.status(400).json({ success: false, message: result.message })
         }
 
         const token = result.token
-        
+
         return res.status(200).json({ success: true, token, message: result.message })
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message || "Lỗi server" })
     }
 }
 
-exports.authorLogInGoogle = async (req, res) => {
+exports.updateUserProfile = async (req, res) => {
+    const { name, gender, dob, menh } = req.body
+    const { userId } = req.params
     try {
-        const tokenPayload = req.tokenPayload
-
-        const result = await authService.authorLogInGoogle(tokenPayload)
+        const result = await authService.updateUserProfile(userId, name, gender, dob, menh)
 
         if (!result.success) {
             return res.status(400).json({ success: false, message: result.message })
         }
 
-        return res.status(200).json({ success: true, message: result.message, token: result.token })
+        return res.json({ success: true, token: result.token, message: "Cập nhật thành công!" })
     } catch (error) {
-        return res.status(500).json({ success: false, message: error.message || "Lỗi server" })
+        return res.status(500).json({ message: error.message || "Lỗi server" })
     }
 }

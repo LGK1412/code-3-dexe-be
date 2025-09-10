@@ -1,4 +1,4 @@
-const usersModel = require('../models/users.model')
+const usersModel = require('../models/users')
 
 exports.generateAvatarUrl = async (file, userId) => {
     if (!file) {
